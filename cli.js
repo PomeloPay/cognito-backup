@@ -97,18 +97,12 @@ function backupAllUsersCli(cli) {
 function restore(cli) {
   const { region, file } = cli.flags;
   const userPoolId = cli.input[1];
-  const tempPassword = cli.input[2];
   const file2 = file || sanitizeFilename(getFilename(userPoolId));
 
   const cognitoIsp = new AWS.CognitoIdentityServiceProvider({ region });
 
   if (!userPoolId) {
     console.error('user-pool-id is required');
-    cli.showHelp();
-  }
-
-  if (!tempPassword) {
-    console.error('temp-password is required');
     cli.showHelp();
   }
 
@@ -132,7 +126,6 @@ function restore(cli) {
           DesiredDeliveryMediums: [],
           MessageAction: 'SUPPRESS',
           ForceAliasCreation: false,
-          TemporaryPassword: tempPassword.toString(),
           UserAttributes: attributes,
         };
 
@@ -148,7 +141,7 @@ const cli = meow(`
     Usage
       $ cognito-backup backup-users <user-pool-id> <options>  Backup/export all users in a single user pool
       $ cognito-backup backup-all-users <options>  Backup all users in all user pools for this account
-      $ cognito-backup restore-users <user-pool-id> <temp-password>  Restore/import users to a single user pool
+      $ cognito-backup restore-users <user-pool-id> Restore/import users to a single user pool
 
       AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, and AWS_REGION
       can be specified in env variables or ~/.aws/credentials
